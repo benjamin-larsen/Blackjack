@@ -4,8 +4,7 @@ class Program
 {
     static int RequestBet(Game game)
     {
-        while (true)
-        {
+        BetLoop:
             ConsoleMod.ClearLine(1);
             Console.Write("Place your bet: ");
             var input = Console.ReadLine();
@@ -15,14 +14,14 @@ class Program
                 {
                     ConsoleMod.ClearLine(2);
                     Console.Write("Error: You don't have enough credits.");
-                    continue;
+                    goto BetLoop;
                 }
                 return bet;
             }
             
             ConsoleMod.ClearLine(2);
             Console.Write("Error: Invalid Bet.");
-        }
+            goto BetLoop;
     }
 
     static void PrintCredits(Game game)
@@ -43,8 +42,7 @@ class Program
          * 4 - Action Prompt
          */
 
-        while (true)
-        {
+        ProgramLoop:
             ConsoleMod.ClearLines(0, 10);
             PrintCredits(game);
 
@@ -64,11 +62,10 @@ class Program
             Console.WriteLine("Type \"one more game\" to start again.");
             var input = Console.ReadLine();
 
-            if (input != "one more game")
+            if (input == "one more game")
             {
-                break;
+                goto ProgramLoop;
             }
-        }
         
         Console.WriteLine("Game Ended.");
     }

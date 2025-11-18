@@ -140,8 +140,8 @@ public class Game
     {
         ConsoleMod.ClearLines(3, 2);
 
-        while (true)
-        {
+
+        Loop:
             ConsoleMod.ClearLine(4);
             Console.SetCursorPosition(0, 4);
             Console.Write("Select an action ([h]it/[s]tand): ");
@@ -161,29 +161,24 @@ public class Game
             
             Console.SetCursorPosition(0, 3);
             Console.Write("Action Error: Invalid Action.");
-        }
+            goto Loop;
     }
 
     public void RunGame()
     {
-        while (true)
-        {
+        GameLoop:
             PrintGame(false, false);
             Action action = RequestAction();
 
-            if (action == Action.Stand)
-            {
-                break;
-            } else if (action == Action.Hit)
+            if (action == Action.Hit)
             {
                 PlayerCards.Add(drawCard());
 
-                if (getCardSum(PlayerCards, out _, false) > 21)
+                if (getCardSum(PlayerCards, out _, false) < 21)
                 {
-                    break;
+                    goto GameLoop;
                 }
             }
-        }
         
         ConsoleMod.ClearLines(3, 2);
         Console.SetCursorPosition(0, 4);
