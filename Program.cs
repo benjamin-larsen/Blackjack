@@ -16,6 +16,14 @@ class Program
                     Console.Write("Error: You don't have enough credits.");
                     goto BetLoop;
                 }
+
+                if (bet <= 0)
+                {
+                    ConsoleMod.ClearLine(2);
+                    Console.Write("Error: You must bet a positive amount.");
+                    goto BetLoop;
+                }
+
                 return bet;
             }
             
@@ -26,6 +34,7 @@ class Program
 
     static void PrintCredits(Game game)
     {
+        ConsoleMod.ClearLine(0);
         Console.SetCursorPosition(0, 0);
         Console.WriteLine($"You have {game.Credits} credits.");
     }
@@ -43,6 +52,14 @@ class Program
          */
 
         ProgramLoop:
+            if (game.Credits <= 0)
+            {
+                ConsoleMod.ClearLines(0, 10);
+                Console.SetCursorPosition(0, 0);
+                Console.WriteLine("You have no more credits left. Game over!");
+                goto EndGame;
+            }
+
             ConsoleMod.ClearLines(0, 10);
             PrintCredits(game);
 
@@ -67,6 +84,7 @@ class Program
                 goto ProgramLoop;
             }
         
+        EndGame:
         Console.WriteLine("Game Ended.");
     }
 }
