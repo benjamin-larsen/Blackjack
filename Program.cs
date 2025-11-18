@@ -5,31 +5,32 @@ class Program
     static int RequestBet(Game game)
     {
         BetLoop:
-            ConsoleMod.ClearLine(1);
-            Console.Write("Place your bet: ");
-            var input = Console.ReadLine();
-            
-            if (int.TryParse(input, out int bet)) {
-                if (bet > game.Credits)
-                {
-                    ConsoleMod.ClearLine(2);
-                    Console.Write("Error: You don't have enough credits.");
-                    goto BetLoop;
-                }
+        ConsoleMod.ClearLine(1);
+        Console.Write("Place your bet: ");
+        var input = Console.ReadLine();
 
-                if (bet <= 0)
-                {
-                    ConsoleMod.ClearLine(2);
-                    Console.Write("Error: You must bet a positive amount.");
-                    goto BetLoop;
-                }
-
-                return bet;
+        if (int.TryParse(input, out int bet))
+        {
+            if (bet > game.Credits)
+            {
+                ConsoleMod.ClearLine(2);
+                Console.Write("Error: You don't have enough credits.");
+                goto BetLoop;
             }
-            
-            ConsoleMod.ClearLine(2);
-            Console.Write("Error: Invalid Bet.");
-            goto BetLoop;
+
+            if (bet <= 0)
+            {
+                ConsoleMod.ClearLine(2);
+                Console.Write("Error: You must bet a positive amount.");
+                goto BetLoop;
+            }
+
+            return bet;
+        }
+
+        ConsoleMod.ClearLine(2);
+        Console.Write("Error: Invalid Bet.");
+        goto BetLoop;
     }
 
     static void PrintCredits(Game game)
@@ -42,7 +43,7 @@ class Program
     static void Main(string[] args)
     {
         Game game = new Game();
-        
+
         /*
          * 0 - Credits
          * 1 - Dealer
@@ -52,38 +53,38 @@ class Program
          */
 
         ProgramLoop:
-            if (game.Credits <= 0)
-            {
-                ConsoleMod.ClearLines(0, 10);
-                Console.SetCursorPosition(0, 0);
-                Console.WriteLine("You have no more credits left. Game over!");
-                goto EndGame;
-            }
-
+        if (game.Credits <= 0)
+        {
             ConsoleMod.ClearLines(0, 10);
-            PrintCredits(game);
+            Console.SetCursorPosition(0, 0);
+            Console.WriteLine("You have no more credits left. Game over!");
+            goto EndGame;
+        }
 
-            int bet = RequestBet(game);
-            
-            game.Credits -= bet;
-            
-            PrintCredits(game);
+        ConsoleMod.ClearLines(0, 10);
+        PrintCredits(game);
 
-            game.StartGame(bet);
-            game.RunGame();
-            
-            PrintCredits(game);
-            
-            Console.SetCursorPosition(0, 5);
-            
-            Console.WriteLine("Type \"one more game\" to start again.");
-            var input = Console.ReadLine();
+        int bet = RequestBet(game);
 
-            if (input == "one more game")
-            {
-                goto ProgramLoop;
-            }
-        
+        game.Credits -= bet;
+
+        PrintCredits(game);
+
+        game.StartGame(bet);
+        game.RunGame();
+
+        PrintCredits(game);
+
+        Console.SetCursorPosition(0, 5);
+
+        Console.WriteLine("Type \"one more game\" to start again.");
+        var input = Console.ReadLine();
+
+        if (input == "one more game")
+        {
+            goto ProgramLoop;
+        }
+
         EndGame:
         Console.WriteLine("Game Ended.");
     }

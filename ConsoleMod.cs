@@ -7,7 +7,7 @@ public class ConsoleMod
         Console.SetCursorPosition(0, row);
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
     }
-    
+
     public static void ClearLines(int row, int count)
     {
         Console.SetCursorPosition(0, row);

@@ -8,13 +8,14 @@ public class Game
     public List<Card> CardDeck = new List<Card>();
     public List<Card> PlayerCards = new List<Card>();
     public List<Card> DealerCards = new List<Card>();
-    
+
     private static Random _rng = new Random();
-    
+
     private void shuffleCards()
     {
         int n = CardDeck.Count;
-        while (n > 1) {
+        while (n > 1)
+        {
             n--;
             int k = _rng.Next(n + 1);
             Card value = CardDeck[k];
@@ -22,7 +23,7 @@ public class Game
             CardDeck[n] = value;
         }
     }
-    
+
     private static string[] cardTemplates =
     [
         "A",
@@ -44,22 +45,22 @@ public class Game
     {
         CardDeck.Clear();
 
-        for (int i = 0; i < cardTemplates.Length; i++) 
+        for (int i = 0; i < cardTemplates.Length; i++)
         {
             CardDeck.Add(new Card(cardTemplates[i], Math.Min(i + 1, 10)));
             CardDeck.Add(new Card(cardTemplates[i], Math.Min(i + 1, 10)));
             CardDeck.Add(new Card(cardTemplates[i], Math.Min(i + 1, 10)));
             CardDeck.Add(new Card(cardTemplates[i], Math.Min(i + 1, 10)));
         }
-        
+
         shuffleCards();
     }
-    
+
     private Card drawCard()
     {
         var topCard = CardDeck[0];
         CardDeck.RemoveAt(0);
-        
+
         return topCard;
     }
 
@@ -70,10 +71,10 @@ public class Game
         generateCardDeck();
         PlayerCards.Clear();
         DealerCards.Clear();
-        
+
         PlayerCards.Add(drawCard());
         DealerCards.Add(drawCard());
-        
+
         PlayerCards.Add(drawCard());
         DealerCards.Add(drawCard());
     }
@@ -83,8 +84,8 @@ public class Game
         bool isSoft = false;
         bool hasAce = false;
         int sum = 0;
-        
-        foreach(var item in cards)
+
+        foreach (var item in cards)
         {
             sum += item.CardValue;
             if (item.CardType == "A")
@@ -92,7 +93,7 @@ public class Game
                 hasAce = true;
             }
         }
-        
+
         if (hasAce && sum < 12)
         {
             isSoft = true;
@@ -101,7 +102,7 @@ public class Game
 
         if (sum < 17) return true;
         if (sum == 17 && isSoft) return true;
-        
+
         return false;
     }
 
@@ -110,8 +111,8 @@ public class Game
         bool hasAce = false;
         str = "";
         int sum = 0;
-        
-        foreach(var item in cards)
+
+        foreach (var item in cards)
         {
             sum += item.CardValue;
 
@@ -131,7 +132,7 @@ public class Game
         {
             str = $"{sum}";
         }
-        
+
         return sum;
     }
 
@@ -140,20 +141,22 @@ public class Game
         int prevLineCursor = Console.CursorTop;
         ConsoleMod.ClearLines(1, 2);
         Console.SetCursorPosition(0, 1);
-        
+
         if (isDealing)
         {
             getCardSum(DealerCards, out string dealerSumStr, finalGame);
-            Console.WriteLine($"Dealer Cards: {string.Join(", ", DealerCards.Select(card => card.CardType))} ({dealerSumStr})");
+            Console.WriteLine(
+                $"Dealer Cards: {string.Join(", ", DealerCards.Select(card => card.CardType))} ({dealerSumStr})");
         }
         else
         {
             Console.WriteLine($"Dealer Cards: {DealerCards[0].CardType}, ?");
         }
-        
+
         getCardSum(PlayerCards, out string playerSumStr, finalGame);
-        Console.WriteLine($"Your Cards: {string.Join(", ", PlayerCards.Select(card => card.CardType))} ({playerSumStr})");
-        
+        Console.WriteLine(
+            $"Your Cards: {string.Join(", ", PlayerCards.Select(card => card.CardType))} ({playerSumStr})");
+
         Console.SetCursorPosition(0, prevLineCursor);
     }
 
@@ -169,33 +172,34 @@ public class Game
 
 
         Loop:
-            ConsoleMod.ClearLine(4);
-            Console.SetCursorPosition(0, 4);
-            Console.Write("Select an action ([h]it/[s]tand): ");
-            Action? input = Console.ReadLine() switch
-            {
-                "hit" => Action.Hit,
-                "h" => Action.Hit,
-                "stand" => Action.Stand,
-                "s"  => Action.Stand,
-                _ => null
-            };
+        ConsoleMod.ClearLine(4);
+        Console.SetCursorPosition(0, 4);
+        Console.Write("Select an action ([h]it/[s]tand): ");
+        Action? input = Console.ReadLine() switch
+        {
+            "hit" => Action.Hit,
+            "h" => Action.Hit,
+            "stand" => Action.Stand,
+            "s" => Action.Stand,
+            _ => null
+        };
 
-            if (input != null)
-            {
-                return input.Value;
-            }
-            
-            Console.SetCursorPosition(0, 3);
-            Console.Write("Action Error: Invalid Action.");
-            goto Loop;
+        if (input != null)
+        {
+            return input.Value;
+        }
+
+        Console.SetCursorPosition(0, 3);
+        Console.Write("Action Error: Invalid Action.");
+        goto Loop;
     }
 
     public void RunGame()
     {
         if (getCardSum(DealerCards, out _, false) == 21) goto EndGame;
 
-        while (getCardSum(PlayerCards, out _, false) < 21) {
+        while (getCardSum(PlayerCards, out _, false) < 21)
+        {
             PrintGame(false, false);
             Action action = RequestAction();
 
@@ -208,11 +212,11 @@ public class Game
                 goto EndGame;
             }
         }
-        
+
         EndGame:
         ConsoleMod.ClearLines(3, 2);
         Console.SetCursorPosition(0, 4);
-        
+
         var playerSum = getCardSum(PlayerCards, out _, false);
 
         if (playerSum > 21)
@@ -230,7 +234,7 @@ public class Game
         }
 
         var dealerSum = getCardSum(DealerCards, out _, false);
-        
+
         PrintGame(true, true);
 
         bool dealerBlackjack = dealerSum == 21 && DealerCards.Count == 2;
@@ -240,15 +244,18 @@ public class Game
         {
             Credits += (_currentBet * 3);
             Console.WriteLine("Blackjack!");
-        } else if (dealerSum > 21)
+        }
+        else if (dealerSum > 21)
         {
             Credits += (_currentBet * 2);
             Console.WriteLine("Dealer Busted. You won.");
-        } else if (playerSum > dealerSum)
-        { 
+        }
+        else if (playerSum > dealerSum)
+        {
             Credits += (_currentBet * 2);
             Console.WriteLine("You won.");
-        } else if (playerSum < dealerSum || (dealerBlackjack && !playerBlackjack))
+        }
+        else if (playerSum < dealerSum || (dealerBlackjack && !playerBlackjack))
         {
             Console.WriteLine("You lost.");
         }
