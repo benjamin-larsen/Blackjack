@@ -2,6 +2,9 @@
 
 public class Game
 {
+    public int Credits = 100;
+    private int _currentBet = 0;
+
     public List<Card> CardDeck = new List<Card>();
     public List<Card> PlayerCards = new List<Card>();
     public List<Card> DealerCards = new List<Card>();
@@ -60,8 +63,10 @@ public class Game
         return topCard;
     }
 
-    public void StartGame()
+    public void StartGame(int bet)
     {
+        _currentBet = bet;
+
         generateCardDeck();
         PlayerCards.Clear();
         DealerCards.Clear();
@@ -105,12 +110,9 @@ public class Game
 
     public void PrintGame(bool isDealing, bool finalGame)
     {
+        int prevLineCursor = Console.CursorTop;
+        ConsoleMod.ClearLines(1, 2);
         Console.SetCursorPosition(0, 1);
-        Console.WriteLine("\r" + new string(' ', Console.WindowWidth) + "\r");
-        Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
-        Console.SetCursorPosition(0, 1);
-        
-        Console.Clear();
         
         if (isDealing)
         {
@@ -123,7 +125,9 @@ public class Game
         }
         
         getCardSum(PlayerCards, out string playerSumStr, finalGame);
-        Console.WriteLine($"Your Cards: {string.Join(", ", PlayerCards.Select(card => card.CardType))} ({playerSumStr})\n");
+        Console.WriteLine($"Your Cards: {string.Join(", ", PlayerCards.Select(card => card.CardType))} ({playerSumStr})");
+        
+        Console.SetCursorPosition(0, prevLineCursor);
     }
 
     public enum Action
@@ -134,8 +138,12 @@ public class Game
 
     public Action RequestAction()
     {
+        ConsoleMod.ClearLines(3, 2);
+
         while (true)
         {
+            ConsoleMod.ClearLine(4);
+            Console.SetCursorPosition(0, 4);
             Console.Write("Select an action ([h]it/[s]tand): ");
             Action? input = Console.ReadLine() switch
             {
@@ -151,7 +159,8 @@ public class Game
                 return input.Value;
             }
             
-            Console.WriteLine("Invalid Action.");
+            Console.SetCursorPosition(0, 3);
+            Console.Write("Action Error: Invalid Action.");
         }
     }
 
@@ -175,7 +184,10 @@ public class Game
                 }
             }
         }
-
+        
+        ConsoleMod.ClearLines(3, 2);
+        Console.SetCursorPosition(0, 4);
+        
         var playerSum = getCardSum(PlayerCards, out _, false);
 
         if (playerSum > 21)
@@ -189,7 +201,7 @@ public class Game
         {
             PrintGame(true, false);
             DealerCards.Add(drawCard());
-            Thread.Sleep(300);
+            Thread.Sleep(1000);
         }
 
         var dealerSum = getCardSum(DealerCards, out _, false);
@@ -198,12 +210,15 @@ public class Game
 
         if (playerSum == 21 && PlayerCards.Count == 2)
         {
+            Credits += (_currentBet * 3);
             Console.WriteLine("Blackjack!");
         } else if (dealerSum > 21)
         {
+            Credits += (_currentBet * 2);
             Console.WriteLine("Dealer Busted. You won.");
         } else if (playerSum > dealerSum)
         { 
+            Credits += (_currentBet * 2);
             Console.WriteLine("You won.");
         } else if (playerSum < dealerSum)
         {
@@ -211,6 +226,7 @@ public class Game
         }
         else
         {
+            Credits += _currentBet;
             Console.WriteLine("Push.");
         }
     }

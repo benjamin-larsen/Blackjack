@@ -2,10 +2,37 @@
 
 class Program
 {
+    static int RequestBet(Game game)
+    {
+        while (true)
+        {
+            ConsoleMod.ClearLine(1);
+            Console.Write("Place your bet: ");
+            var input = Console.ReadLine();
+            
+            if (int.TryParse(input, out int bet)) {
+                if (bet > game.Credits)
+                {
+                    ConsoleMod.ClearLine(2);
+                    Console.Write("Error: You don't have enough credits.");
+                    continue;
+                }
+                return bet;
+            }
+            
+            ConsoleMod.ClearLine(2);
+            Console.Write("Error: Invalid Bet.");
+        }
+    }
+
+    static void PrintCredits(Game game)
+    {
+        Console.SetCursorPosition(0, 0);
+        Console.WriteLine($"You have {game.Credits} credits.");
+    }
+
     static void Main(string[] args)
     {
-        Console.Clear();
-
         Game game = new Game();
         
         /*
@@ -18,13 +45,21 @@ class Program
 
         while (true)
         {
-            int currentLineCursor = Console.CursorTop;
-            Console.SetCursorPosition(0, 0);
-            Console.WriteLine("You have 0 credits.");
-            Console.SetCursorPosition(0, currentLineCursor);
+            ConsoleMod.ClearLines(0, 10);
+            PrintCredits(game);
+
+            int bet = RequestBet(game);
             
-            game.StartGame();
+            game.Credits -= bet;
+            
+            PrintCredits(game);
+
+            game.StartGame(bet);
             game.RunGame();
+            
+            PrintCredits(game);
+            
+            Console.SetCursorPosition(0, 5);
             
             Console.WriteLine("Type \"one more game\" to start again.");
             var input = Console.ReadLine();
