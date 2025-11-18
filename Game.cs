@@ -78,6 +78,33 @@ public class Game
         DealerCards.Add(drawCard());
     }
 
+    private bool shouldDealerDraw(List<Card> cards)
+    {
+        bool isSoft = false;
+        bool hasAce = false;
+        int sum = 0;
+        
+        foreach(var item in cards)
+        {
+            sum += item.CardValue;
+            if (item.CardType == "A")
+            {
+                hasAce = true;
+            }
+        }
+        
+        if (hasAce && sum < 12)
+        {
+            isSoft = true;
+            sum += 10;
+        }
+
+        if (sum < 17) return true;
+        if (sum == 17 && isSoft) return true;
+        
+        return false;
+    }
+
     private int getCardSum(List<Card> cards, out string str, bool finalGame)
     {
         bool hasAce = false;
@@ -166,20 +193,23 @@ public class Game
 
     public void RunGame()
     {
-        GameLoop:
+        if (getCardSum(DealerCards, out _, false) == 21) goto EndGame;
+
+        while (getCardSum(PlayerCards, out _, false) < 21) {
             PrintGame(false, false);
             Action action = RequestAction();
 
             if (action == Action.Hit)
             {
                 PlayerCards.Add(drawCard());
-
-                if (getCardSum(PlayerCards, out _, false) < 21)
-                {
-                    goto GameLoop;
-                }
             }
+            else if (action == Action.Stand)
+            {
+                goto EndGame;
+            }
+        }
         
+        EndGame:
         ConsoleMod.ClearLines(3, 2);
         Console.SetCursorPosition(0, 4);
         
@@ -192,7 +222,7 @@ public class Game
             return;
         }
 
-        while (getCardSum(DealerCards, out _, false) < 17)
+        while (shouldDealerDraw(DealerCards))
         {
             PrintGame(true, false);
             DealerCards.Add(drawCard());
@@ -203,7 +233,10 @@ public class Game
         
         PrintGame(true, true);
 
-        if (playerSum == 21 && PlayerCards.Count == 2)
+        bool dealerBlackjack = dealerSum == 21 && DealerCards.Count == 2;
+        bool playerBlackjack = playerSum == 21 && PlayerCards.Count == 2;
+
+        if (playerBlackjack && !dealerBlackjack)
         {
             Credits += (_currentBet * 3);
             Console.WriteLine("Blackjack!");
@@ -215,7 +248,7 @@ public class Game
         { 
             Credits += (_currentBet * 2);
             Console.WriteLine("You won.");
-        } else if (playerSum < dealerSum)
+        } else if (playerSum < dealerSum || (dealerBlackjack && !playerBlackjack))
         {
             Console.WriteLine("You lost.");
         }
