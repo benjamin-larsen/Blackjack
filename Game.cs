@@ -13,7 +13,6 @@ public class Game
     
     private void shuffleCards()
     {
-        RandomNumberGenerator.GetItems(CardDeck);
         int n = CardDeck.Count;
         while (n > 1)
         {
