@@ -1,5 +1,7 @@
 ﻿namespace BlackJack;
 
+using System.Security.Cryptography;
+
 public class Game
 {
     public int Credits = 100;
@@ -8,16 +10,15 @@ public class Game
     public List<Card> CardDeck = new List<Card>();
     public List<Card> PlayerCards = new List<Card>();
     public List<Card> DealerCards = new List<Card>();
-
-    private static Random _rng = new Random();
-
+    
     private void shuffleCards()
     {
+        RandomNumberGenerator.GetItems(CardDeck);
         int n = CardDeck.Count;
         while (n > 1)
         {
             n--;
-            int k = _rng.Next(n + 1);
+            int k = RandomNumberGenerator.GetInt32(n + 1);
             Card value = CardDeck[k];
             CardDeck[k] = CardDeck[n];
             CardDeck[n] = value;
